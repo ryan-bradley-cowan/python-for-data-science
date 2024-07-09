@@ -49,4 +49,8 @@ print(counter)
 
 # Is there a correlation between length of the job title string and salary?
 sal['title_length'] = sal['JobTitle'].apply(len)
+print(sal['title_length'][:5])
+print(sal[['title_length', 'TotalPayBenefits']].corr())
+sal['title_length'] = sal['JobTitle'].apply(lambda x: len(x))
+print(sal['title_length'][:5])
 print(sal[['title_length', 'TotalPayBenefits']].corr())
