@@ -5,6 +5,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime as dt
+import plotly
 
 # Figure out how to get the stock data from Jan 1st 2006 to Jan 1st 2016 for each of these banks. Set each bank to be a separate dataframe, with the variable name for that bank being its ticker symbol. This will involve a few steps:
 # Use datetime to set start and end datetime objects.
@@ -64,9 +65,38 @@ print(returns[returns.index >= dt.datetime(2015, 1, 1)].std())
 print(returns.loc['2015-01-01':'2015-12-31'].std())
 
 # Create a distplot using seaborn of the 2015 returns for Morgan Stanley
-sns.distplot(returns.loc['2015-01-01':'2015-12-31', 'MS Return'])
-plt.show()
+# sns.distplot(returns.loc['2015-01-01':'2015-12-31', 'MS Return'])
+# plt.show()
 
 # Create a distplot using seaborn of the 2008 returns for CitiGroup
-sns.distplot(returns.loc['2008-01-01':'2008-12-31', 'C Return'])
+# sns.distplot(returns.loc['2008-01-01':'2008-12-31', 'C Return'])
+# plt.show()
+
+# More visualisation
+# Create a line plot showing Close price for each bank for the entire index of time. (Hint: Try using a for loop, or use .xs to get a cross section of the data.)
+close = pd.DataFrame()
+for tick in tickers:
+    close[tick+' Close'] = df.xs(key=(tick, 'Close'), axis=1, level=('Bank Ticker', 'Stock Info'))
+# close.plot.line()
+# plt.show()
+
+# Alternative
+# df.xs(key='Close', axis=1, level='Stock Info').plot()
+# plt.show()
+
+# Moving averages
+# Plot the rolling 30 day average against the Close Price for Bank Of America's stock for the year 2008
+bac_return = pd.DataFrame()
+bac_return['BAC Close'] = df.xs(key=('BAC', 'Close'), axis=1, level=('Bank Ticker', 'Stock Info'))['2008-01-01':'2009-01-01']
+bac_return['MA'] = bac_return['BAC Close'].rolling(window=30).mean()
+bac_return.plot.line()
+plt.show()
+# Alternative
+plt.figure(figsize=(12, 6))
+df['BAC']['Close']['2008-01-01':'2009-01-01'].rolling(window=30).mean().plot(label='30 Day Moving Average')
+df['BAC']['Close']['2008-01-01':'2009-01-01'].plot(label='BAC Closing Price')
+plt.show()
+
+# Create a heatmap of the correlation between the stocks Close Price.
+sns.heatmap(data=df.xs(key='Close', axis=1, level='Stock Info').corr(), annot=True)
 plt.show()
